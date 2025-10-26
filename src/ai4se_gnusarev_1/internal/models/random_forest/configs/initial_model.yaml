@@ -1,0 +1,5 @@
+data:
+  train_path: /mnt/c/Users/Sergey/Desktop/VSCode/Study/ai4se_gnusarev_1/data/prepared_data_train.xlsx
+  test_path: /mnt/c/Users/Sergey/Desktop/VSCode/Study/ai4se_gnusarev_1/data/prepared_data_test.xlsx
+parameters:
+  random_state: 42
