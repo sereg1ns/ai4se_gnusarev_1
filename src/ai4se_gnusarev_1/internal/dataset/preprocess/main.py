@@ -68,6 +68,8 @@ class Preprocess:
         data = data.drop_nulls().unique(subset="message")
         # apply filters
         data = data.with_columns(
-            pl.col("message").map_elements(self._combined_filter, return_dtype=pl.String)
+            pl.col("message").map_elements(
+                self._combined_filter, return_dtype=pl.String
+            )
         )
         return data

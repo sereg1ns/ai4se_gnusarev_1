@@ -1,0 +1,8 @@
+data:
+  train_path: /mnt/c/Users/SGnusarev/Desktop/VSCode/ai4se_gnusarev_1/data/prepared_data_train.xlsx
+  test_path: /mnt/c/Users/SGnusarev/Desktop/VSCode/ai4se_gnusarev_1/data/prepared_data_test.xlsx
+parameters:
+  random_state: 42
+  n_estimators: 145
+  criterion: gini
+  max_depth: 39

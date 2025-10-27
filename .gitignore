@@ -1,0 +1,5 @@
+.cache
+.venv
+.ruff_cache
+.python-version
+__pycache__

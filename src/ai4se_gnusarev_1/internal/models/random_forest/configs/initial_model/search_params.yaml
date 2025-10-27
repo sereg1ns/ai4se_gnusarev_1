@@ -1,0 +1,21 @@
+train_path: /mnt/c/Users/SGnusarev/Desktop/VSCode/ai4se_gnusarev_1/data/prepared_data_train.xlsx
+parameters:
+  static:
+    random_state: 42
+  dynamic:
+    n_estimators:
+      method: suggest_int
+      range:
+        low: 100
+        high: 150
+    criterion:
+      method: suggest_categorical
+      range:
+        choices:
+          - gini
+          - entropy
+    max_depth:
+      method: suggest_int
+      range:
+        low: 20
+        high: 40

@@ -1,0 +1,6 @@
+model: roberta-base
+data:
+  train:
+  test:
+  batch_size:
+num_epochs: 10

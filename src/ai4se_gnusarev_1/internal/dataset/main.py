@@ -18,21 +18,19 @@ def main():
 
 def parse_args():
     prepare_data_parser = argparse.ArgumentParser()
-    default_data_path = Path(
-        "/mnt/c/Users/Sergey/Desktop/VSCode/Study/ai4se_gnusarev_1/data/"
-    )
+    default_data_path = Path("")
     prepare_data_parser.set_defaults(func=prepare_data)
     prepare_data_parser.add_argument(
         "--filters",
         help="Delimeted list of filters to apply",
         type=str,
-        default="remove_url,expand_contraction,remove_special_chars,remove_repetitions,replace_curse_rephrasing"
+        default="remove_url,expand_contraction,remove_special_chars,remove_repetitions,replace_curse_rephrasing",
     )
     prepare_data_parser.add_argument(
         "--lower",
         help="Whether to lowercase the message",
         type=bool,
-        default=True
+        default=True,
     )
     prepare_data_parser.add_argument(
         "--input",
@@ -53,10 +51,7 @@ def parse_args():
 def prepare_data(args):
     # process
     prepared_filters = (
-        args.filters
-        .replace(" ", "")
-        .replace("\n", "")
-        .replace("\t", "")
+        args.filters.replace(" ", "").replace("\n", "").replace("\t", "")
     )
     preprocessor = Preprocess(
         filters=[f for f in prepared_filters.split(",")],
@@ -69,7 +64,7 @@ def prepare_data(args):
     ## check
     print(f"1 balance in test: {check_balance(test):.2f}")
     print(f"1 balance in train: {check_balance(train):.2f}")
-    #save
+    # save
     test.write_excel(os.path.join(args.output, DATA_PREFIX + "_test.xlsx"))
     train.write_excel(os.path.join(args.output, DATA_PREFIX + "_train.xlsx"))
 
