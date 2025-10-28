@@ -95,7 +95,7 @@ class Trainer:
             for metric in self.metrics:
                 metric.reset()
             with torch.no_grad():
-                for i, (vinputs, vlabels) in enumerate(test_dataloader):
+                for i, (vinputs, vlabels) in tqdm(enumerate(test_dataloader), total=len(test_dataloader), leave=False):
                     voutputs = self.model(**vinputs).logits
                     vloss = self.loss_fn(voutputs, vlabels)
                     self.compute_metrics(voutputs, vlabels)
@@ -120,7 +120,7 @@ class Trainer:
         running_loss = 0.0
         last_loss = 0.0
 
-        for i, (inputs, labels) in tqdm(enumerate(self.train_dataloader), leave=False):
+        for i, (inputs, labels) in tqdm(enumerate(self.train_dataloader), total=len(self.train_dataloader), leave=False):
             # Zero your gradients for every batch!
             self.optimizer.zero_grad()
 
