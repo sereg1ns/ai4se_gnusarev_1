@@ -1,1 +1,1 @@
-HF_HOME = "/mnt/c/Users/SGnusarev/Desktop/VSCode/ai4se_gnusarev_1/.cache"
+HF_HOME = "/mnt/c/Users/Sergey/Desktop/VSCode/Study/ai4se_gnusarev_1/.cache"

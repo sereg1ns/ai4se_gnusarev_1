@@ -11,9 +11,12 @@ from torchmetrics.classification import (
 )
 from torchmetrics import Metric
 from transformers import RobertaTokenizer, AutoModelForSequenceClassification
+from tqdm import tqdm
 
-from ai4se_gnusarev_1.internal.models.bert.model import BertModel
-from ai4se_gnusarev_1.internal.models.bert.dataset import ToxicReviewDataset
+from ai4se_gnusarev_1.internal.models.bert.data import (
+    ToxicReviewDataset,
+    collate_with_tokenizer
+)
 from ai4se_gnusarev_1.internal.models.bert.consts import HF_HOME
 
 
@@ -23,9 +26,10 @@ class BinarySupport(Metric):
         self.add_state(
             name="support", default=torch.tensor(0), dist_reduce_fx="mean"
         )
+        self.pos_label = pos_label
 
     def update(self, _, target):
-        self.support += (target == 1).sum() / len(target)
+        self.support += (target == self.pos_label).sum() / len(target)
 
     def compute(self):
         return self.support.item()
@@ -36,7 +40,7 @@ class Trainer:
         with open(cfg_path, "r") as f:
             cfg = yaml.safe_load(f)
         # init model
-        self.tokenizer = RobertaTokenizer.from_pretrained(
+        tokenizer = RobertaTokenizer.from_pretrained(
             cfg["model"],
             cache_dir=HF_HOME,
             use_safetensors=True,
@@ -63,17 +67,19 @@ class Trainer:
         self.train_dataloader = DataLoader(
             dataset=ToxicReviewDataset(cfg["data"]["train"]),
             batch_size=cfg["data"]["batch_size"],
+            collate_fn=collate_with_tokenizer(tokenizer),
         )
         test_dataloader = DataLoader(
             dataset=ToxicReviewDataset(cfg["data"]["test"]),
             batch_size=cfg["data"]["batch_size"],
+            collate_fn=collate_with_tokenizer(tokenizer),
         )
         # other variables
         epoch_number = 0
         best_vloss = 1_000_000
         num_epochs = cfg["num_epochs"]
 
-        for epoch in range(num_epochs):
+        for epoch in tqdm(range(num_epochs)):
             print("EPOCH {}:".format(epoch_number + 1))
 
             # Make sure gradient tracking is on, and do a pass over the data
@@ -90,16 +96,16 @@ class Trainer:
                 metric.reset()
             with torch.no_grad():
                 for i, (vinputs, vlabels) in enumerate(test_dataloader):
-                    voutputs = self.model(**self.tokenizer(vinputs)).logits
+                    voutputs = self.model(**vinputs).logits
                     vloss = self.loss_fn(voutputs, vlabels)
                     self.compute_metrics(voutputs, vlabels)
                     running_vloss += vloss
 
             avg_vloss = running_vloss / (i + 1)
-            print("LOSS train {} test {}".format(avg_loss, avg_vloss))
+            print("EPOCH {}LOSS train {} test {}".format(epoch, avg_loss, avg_vloss))
             for metric in self.metrics:
                 metric.compute()
-                print("TEST  {}: {}".format(metric.__name__, metric))
+                print("TEST  {}: {}".format(metric..__class__.__name__, metric))
 
             epoch_number += 1
         # save last model
@@ -114,12 +120,12 @@ class Trainer:
         running_loss = 0.0
         last_loss = 0.0
 
-        for i, (inputs, labels) in enumerate(self.train_dataloader):
+        for i, (inputs, labels) in tqdm(enumerate(self.train_dataloader), leave=False):
             # Zero your gradients for every batch!
             self.optimizer.zero_grad()
 
             # Make predictions for this batch
-            outputs = self.model(**self.tokenizer(inputs)).logits
+            outputs = self.model(**inputs).logits
 
             # Compute the loss and its gradients
             loss = self.loss_fn(outputs, labels)
@@ -140,7 +146,7 @@ class Trainer:
                     metric.compute()
                     print(
                         "  batch {} {}: {}".format(
-                            i + 1, metric.__name__, metric
+                            i + 1, metric..__class__.__name__, metric
                         )
                     )
 
@@ -153,3 +159,5 @@ class Trainer:
     ):
         for metric in self.metrics:
             metric(preds, target)
+
+trainer = Trainer()

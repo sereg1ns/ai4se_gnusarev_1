@@ -1,6 +1,6 @@
 model: roberta-base
 data:
-  train:
-  test:
-  batch_size:
-num_epochs: 10
+  train: /mnt/c/Users/Sergey/Desktop/VSCode/Study/ai4se_gnusarev_1/data/prepared_data_train.xlsx
+  test: /mnt/c/Users/Sergey/Desktop/VSCode/Study/ai4se_gnusarev_1/data/prepared_data_test.xlsx
+  batch_size: 128
+num_epochs: 2
