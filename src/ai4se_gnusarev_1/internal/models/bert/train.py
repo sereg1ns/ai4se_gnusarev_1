@@ -105,7 +105,7 @@ class Trainer:
             print("EPOCH {}LOSS train {} test {}".format(epoch, avg_loss, avg_vloss))
             for metric in self.metrics:
                 metric.compute()
-                print("TEST  {}: {}".format(metric..__class__.__name__, metric))
+                print("TEST  {}: {}".format(metric.__class__.__name__, metric))
 
             epoch_number += 1
         # save last model
@@ -146,7 +146,7 @@ class Trainer:
                     metric.compute()
                     print(
                         "  batch {} {}: {}".format(
-                            i + 1, metric..__class__.__name__, metric
+                            i + 1, metric.__class__.__name__, metric
                         )
                     )
 
